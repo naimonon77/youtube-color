@@ -1,5 +1,3 @@
-let observer = null;
-
 // 再生回数を取得する関数
 function getViewCount() {
     const viewCountElement = document.querySelector('.view-count, #info-text .style-scope.ytd-video-primary-info-renderer');
@@ -12,89 +10,75 @@ function getViewCount() {
 }
 
 function setBackgroundColor(color) {
-    
     const styleElement = document.createElement('style');
     styleElement.textContent = `
-      body {
-        background-color: ${color} !important;
-      }
       .ytd-app {
-        background-color: ${color} !important;
+        background-color: ${color}
       }
     `;
     document.head.appendChild(styleElement);
-    console.log(`背景色が ${color} に設定されました。`);
-  }
-  
+    // console.log(`背景色が ${color} に設定されました。`);
+}
+
+function getHslColor(viewCount) {
+    const hue = Math.log(viewCount) * 30;
+    const hslColor = `hsl(${hue}deg 100% 20%)`;
+    return hslColor;
+}
+
 // 再生回数に応じて背景色を更新
 function updateBackgroundColor() {
     const viewCount = getViewCount();
 
     if (viewCount !== null) {
-        let color = "white";
-        if (viewCount > 1000000) {
-            color = "red";
-        } else if (viewCount > 500000) {
-            color = "orange";
-        } else {
-            color = "green";
-        }
+        const hue = Math.log(viewCount) * 30;
+        console.log(hue);
+        const hslColor = `hsl(${hue}deg 100% 20%)`;
 
-        setBackgroundColor(color);
-        console.log(`再生回数: ${viewCount}, 背景色: ${color}`);
+        setBackgroundColor(hslColor);
+        // console.log(`再生回数: ${viewCount}, 背景色: ${color}`);
     } else {
-        console.log("再生回数が取得できませんでした。");
+        // console.log("再生回数が取得できませんでした。");
     }
 }
-
-let currentBackgroundColor = null;
-
-function continuouslyUpdateBackgroundColor() {
-    const viewCount = getViewCount();
-
-    if (viewCount !== null) {
-        let color = "white";
-        if (viewCount > 1000000) {
-            color = "red";
-        } else if (viewCount > 500000) {
-            color = "orange";
-        } else {
-            color = "green";
-        }
-
-        setBackgroundColor(color);
-        currentBackgroundColor = color;
-        console.log(`再生回数: ${viewCount}, 背景色: ${color}`);
-    }
-}
-
-// 定期的に背景色を更新
-// setInterval(continuouslyUpdateBackgroundColor, 1000);
-
-
-// MutationObserverを設定してDOMを監視する
-function startObserver() {
-    if (observer) observer.disconnect(); // 古いObserverを停止
-    observer = new MutationObserver(() => {
-        if (document.querySelector('.view-count, #info-text .style-scope.ytd-video-primary-info-renderer')) {
-            updateBackgroundColor();
-            observer.disconnect(); // 処理が終わったら監視を停止
-        }
-    });
-
-    observer.observe(document.body, { childList: true, subtree: true });
-}
-
-// URL変更を監視する
-let currentUrl = location.href;
 
 setInterval(() => {
-    if (currentUrl !== location.href) {
-        currentUrl = location.href;
-        console.log("URLが変更されました。新しいページを監視します。");
-        startObserver(); // URLが変更されたら再度監視を開始
-    }
-}, 1000);
+    updateBackgroundColor();
+    processRelatedVideos();
+}, 3000);
 
-// 初期化処理
-startObserver();
+function convertViewCountToNumber(viewCount) {
+    let num = parseInt(viewCount.replace(/[^0-9]/g, ''));
+    if (viewCount.includes('K')) {
+        num *= 1000;
+    }
+    else if (viewCount.includes('M')) {
+        num *= 1000000;
+    }
+    return num;
+}
+
+
+function processRelatedVideos() {
+    //  style-scope ytd-item-section-renderer style-scope ytd-item-section-renderer
+    document.querySelectorAll('.style-scope.ytd-item-section-renderer').forEach(relatedVideo => {
+        const viewCountElement = relatedVideo.querySelector('.inline-metadata-item'); // Adjust selector
+        if (viewCountElement == null) return;
+        const view = convertViewCountToNumber(viewCountElement.innerHTML);
+        const hsl = getHslColor(view);
+        relatedVideo.style.backgroundColor = hsl;
+        console.log(view);
+        // style
+        // relatedVideo.style = "background-color: red";
+
+        // if (viewCountElement) {
+        //     // ... (extract view count, calculate color, etc.)
+        //     setBackgroundColor(relatedVideo, calculatedColor);
+        // }
+
+    });
+}
+
+const relatedVideosContainer = document.querySelector('.related-videos-container'); // Adjust selector
+const observer = new MutationObserver(() => processRelatedVideos());
+observer.observe(relatedVideosContainer, { childList: true, subtree: true });
