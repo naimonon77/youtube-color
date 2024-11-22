@@ -39,7 +39,7 @@ function updateBackgroundColor() {
         setBackgroundColor(hslColor);
         // console.log(`再生回数: ${viewCount}, 背景色: ${color}`);
     } else {
-        // setBackgroundColor(`black`)
+        setBackgroundColor(`black`)
     }
 }
 
@@ -68,6 +68,7 @@ function processRelatedVideos() {
         const view = convertViewCountToNumber(viewCountElement.innerHTML);
         const hsl = getHslColor(view);
         relatedVideo.style.backgroundColor = hsl;
+        // console.log(hsl);
 
     });
 }
