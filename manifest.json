@@ -1,0 +1,21 @@
+{
+    "manifest_version": 3,
+    "name": "YouTube Background Color Changer",
+    "version": "1.0",
+    "permissions": [
+      "activeTab"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": ["*://www.youtube.com/*"],
+        "js": ["content.js"]
+      }
+    ],
+    "host_permissions": [
+      "https://www.youtube.com/*"
+    ]
+  }
+  
