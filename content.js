@@ -1,14 +1,18 @@
+let observer = null;
+
+// 再生回数を取得する関数
 function getViewCount() {
     const viewCountElement = document.querySelector('.view-count, #info-text .style-scope.ytd-video-primary-info-renderer');
     if (viewCountElement) {
         const viewCountText = viewCountElement.textContent;
-        return parseInt(viewCountText.replace(/[^0-9]/g, ''));
+        const viewCount = parseInt(viewCountText.replace(/[^0-9]/g, ''));
+        return viewCount;
     }
     return null;
 }
 
 function setBackgroundColor(color) {
-    const hslColor = `hsl(${hue}, 50%, 50%)`;
+    
     const styleElement = document.createElement('style');
     styleElement.textContent = `
       body {
@@ -20,11 +24,12 @@ function setBackgroundColor(color) {
     `;
     document.head.appendChild(styleElement);
     console.log(`背景色が ${color} に設定されました。`);
-}
-
+  }
+  
+// 再生回数に応じて背景色を更新
 function updateBackgroundColor() {
     const viewCount = getViewCount();
-    console.log(`再生回数: ${viewCount}`);
+
     if (viewCount !== null) {
         let color = "white";
         if (viewCount > 1000000) {
@@ -37,8 +42,34 @@ function updateBackgroundColor() {
 
         setBackgroundColor(color);
         console.log(`再生回数: ${viewCount}, 背景色: ${color}`);
+    } else {
+        console.log("再生回数が取得できませんでした。");
     }
 }
+
+let currentBackgroundColor = null;
+
+function continuouslyUpdateBackgroundColor() {
+    const viewCount = getViewCount();
+
+    if (viewCount !== null) {
+        let color = "white";
+        if (viewCount > 1000000) {
+            color = "red";
+        } else if (viewCount > 500000) {
+            color = "orange";
+        } else {
+            color = "green";
+        }
+
+        setBackgroundColor(color);
+        currentBackgroundColor = color;
+        console.log(`再生回数: ${viewCount}, 背景色: ${color}`);
+    }
+}
+
+// 定期的に背景色を更新
+// setInterval(continuouslyUpdateBackgroundColor, 1000);
 
 
 // MutationObserverを設定してDOMを監視する

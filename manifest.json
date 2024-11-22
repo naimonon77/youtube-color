@@ -1,18 +1,14 @@
 {
     "manifest_version": 3,
-    "name": "YouTube Background Color Changer",
+    "name": "YouTube再生数カラーチェンジャー（APIキー不要）",
     "version": "1.0",
-    "permissions": [
-      "activeTab"
-    ],
+    "permissions": ["scripting", "activeTab"],
+    "host_permissions": ["https://www.youtube.com/*"],
     "content_scripts": [
       {
-        "matches": ["*://www.youtube.com/*"],
+        "matches": ["https://www.youtube.com/watch*"],
         "js": ["content.js"]
       }
-    ],
-    "host_permissions": [
-      "https://www.youtube.com/*"
     ]
   }
   
