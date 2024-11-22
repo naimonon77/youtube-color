@@ -21,8 +21,9 @@ function setBackgroundColor(color) {
 }
 
 function getHslColor(viewCount) {
-    const hue = Math.log(viewCount) * 30;
-    const hslColor = `hsl(${hue}deg 100% 20%)`;
+    const hue = Math.log10(viewCount) * 50;
+    const toFixed = hue.toFixed(0);
+    const hslColor = `hsl(${toFixed}deg 100% 20%)`;
     return hslColor;
 }
 
@@ -38,7 +39,7 @@ function updateBackgroundColor() {
         setBackgroundColor(hslColor);
         // console.log(`再生回数: ${viewCount}, 背景色: ${color}`);
     } else {
-        // console.log("再生回数が取得できませんでした。");
+        // setBackgroundColor(`black`)
     }
 }
 
@@ -61,20 +62,12 @@ function convertViewCountToNumber(viewCount) {
 
 function processRelatedVideos() {
     //  style-scope ytd-item-section-renderer style-scope ytd-item-section-renderer
-    document.querySelectorAll('.style-scope.ytd-item-section-renderer').forEach(relatedVideo => {
+    document.querySelectorAll('.style-scope').forEach(relatedVideo => {
         const viewCountElement = relatedVideo.querySelector('.inline-metadata-item'); // Adjust selector
         if (viewCountElement == null) return;
         const view = convertViewCountToNumber(viewCountElement.innerHTML);
         const hsl = getHslColor(view);
         relatedVideo.style.backgroundColor = hsl;
-        console.log(view);
-        // style
-        // relatedVideo.style = "background-color: red";
-
-        // if (viewCountElement) {
-        //     // ... (extract view count, calculate color, etc.)
-        //     setBackgroundColor(relatedVideo, calculatedColor);
-        // }
 
     });
 }
