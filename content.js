@@ -21,13 +21,19 @@ function getHslColor(viewCount) {
 let styleElement = document.createElement("style"); // Create ONCE outside the function
 document.head.appendChild(styleElement); // Append ONCE outside the function
 
+function setYtdAppTextContent(textContent) {
+    if (styleElement.textContent !== textContent) {
+        styleElement.textContent = textContent;
+    }
+}
+
 // 再生回数に応じて背景色を更新
 function updateYtdAppBackgroundColor() {
     const viewCount = getCurrentViewCount();
 
     const url = window.location.href;
     if (!(url.includes("https://www.youtube.com/watch?"))) {
-        styleElement.textContent = `.ytd-app { background-color: transparent; }`;
+        setYtdAppTextContent(`.ytd-app { background-color: transparent; }`);
         return;
     }
 
@@ -35,7 +41,7 @@ function updateYtdAppBackgroundColor() {
         const hslColor = getHslColor(viewCount);
         // console.log(hslColor);
 
-        styleElement.textContent = `.ytd-app { background-color: ${hslColor}; }`;
+        setYtdAppTextContent(`.ytd-app { background-color: ${hslColor}; }`);
     } else {
         // setBackgroundColor(`black`);
     }
@@ -62,7 +68,9 @@ function processRelatedVideosSub(parent, parentSelectors, getViewCountElement) {
         if (viewCountElement == null) return;
         const view = convertViewCountToNumber(viewCountElement.innerHTML);
         const hsl = getHslColor(view);
-        relatedVideo.style.backgroundColor = hsl;
+        if (relatedVideo.style.backgroundColor !== hsl) {
+            relatedVideo.style.backgroundColor = hsl;
+        }
         // console.log(hsl);
     });
 }
